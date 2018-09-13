@@ -1,6 +1,8 @@
 
 library(shiny)
 library(gassyPants)
+library(seacarb)
+library(zoo)
 source('helpers.R')
 
 ui = fluidPage(
@@ -53,7 +55,7 @@ ui = fluidPage(
                         style='font-size:75%'),
                     numericInput(inputId='TAlk', label=NULL,
                         min=0, max=10000, value=1000),
-                    p(strong('Initial DIC'), '(umol/L)',
+                    p(strong('Initial [DIC]'), '(umol/L)',
                         style='font-size:75%'),
                     numericInput(inputId='TCO2_init', label=NULL,
                         min=0, max=10000, value=1200)
@@ -66,33 +68,39 @@ ui = fluidPage(
                     p(strong('Init pCO2 air'), '(uatm)', style='font-size:75%'),
                     numericInput(inputId='pCO2_air', label=NULL,
                         min=0, max=10000, value=410),
-                    p(strong('Init [O2]'), '(umol)', style='font-size:75%'),
+                    p(strong('Init [O2]'), '(umol/L)', style='font-size:75%'),
                     numericInput(inputId='O2_init', label=NULL,
                         min=0, max=10000, value=280)
                 )
             ),
             fluidRow(
+                column(12, align='center',
+                    p(strong('24 hour averages:'),
+                        style='font-size:75%; color:#663399')
+                )
+            ),
+            fluidRow(
                 column(3, align='center',
                     div(style='outline:solid #663399',
-                        p(strong('24 hr GPP:'), style='font-size:75%'),
+                        p(strong('GPP'), style='font-size:75%'),
                         htmlOutput(outputId='GPP')
                     )
                 ),
                 column(3, align='center',
                     div(style='outline:solid #663399',
-                        p(strong('24 hr ER:'), style='font-size:75%'),
+                        p(strong('ER'), style='font-size:75%'),
                         htmlOutput(outputId='ER')
                     )
                 ),
                 column(3, align='center',
                     div(style='outline:solid #663399',
-                        p(strong('24 hr G O2:'),style='font-size:75%'),
+                        p(strong('G O2'),style='font-size:75%'),
                         htmlOutput(outputId='G_O2')
                     )
                 ),
                 column(3, align='center',
                     div(style='outline:solid #663399',
-                        p(strong('24 hr G CO2:'),style='font-size:75%'),
+                        p(strong('G CO2'),style='font-size:75%'),
                         htmlOutput(outputId='G_CO2')
                     )
                 )
