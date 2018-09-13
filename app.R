@@ -74,19 +74,19 @@ ui = fluidPage(
                 )
             ),
             fluidRow(
-                column(4,
+                column(4, align='center',
                     div(style='outline:solid #663399',
                         p(strong('24 hr GPP:'), style='font-size:75%'),
                         htmlOutput(outputId='GPP')
                     )
                 ),
-                column(4,
+                column(4, align='center',
                     div(style='outline:solid #663399',
                         p(strong('24 hr ER:'), style='font-size:75%'),
                         htmlOutput(outputId='ER')
                     )
                 ),
-                column(4,
+                column(4, align='center',
                     div(style='outline:solid #663399',
                         p(strong('24 hr G:'),style='font-size:75%'),
                         htmlOutput(outputId='G')
