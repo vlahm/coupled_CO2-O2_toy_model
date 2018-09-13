@@ -8,7 +8,7 @@ source('helpers.R')
 ui = fluidPage(
     # titlePanel("Coupled O2 and CO2 diel metabolism 'toy' model"),
     titlePanel(HTML(paste("<h4 style='color:#663399'>Coupled O2 and CO2 diel",
-        "metabolism 'toy' model</h3>"))),
+        "metabolism 'toy' model</h3>")), windowTitle='CO2-O2 Toy Model'),
 
     sidebarLayout(
         sidebarPanel(
