@@ -1,7 +1,5 @@
 
 library(shiny)
-library(devtools)
-install_github('gholtgrieve/gassyPants')
 library(gassyPants)
 source('helpers.R')
 
@@ -74,22 +72,28 @@ ui = fluidPage(
                 )
             ),
             fluidRow(
-                column(4, align='center',
+                column(3, align='center',
                     div(style='outline:solid #663399',
                         p(strong('24 hr GPP:'), style='font-size:75%'),
                         htmlOutput(outputId='GPP')
                     )
                 ),
-                column(4, align='center',
+                column(3, align='center',
                     div(style='outline:solid #663399',
                         p(strong('24 hr ER:'), style='font-size:75%'),
                         htmlOutput(outputId='ER')
                     )
                 ),
-                column(4, align='center',
+                column(3, align='center',
                     div(style='outline:solid #663399',
-                        p(strong('24 hr G:'),style='font-size:75%'),
-                        htmlOutput(outputId='G')
+                        p(strong('24 hr G O2:'),style='font-size:75%'),
+                        htmlOutput(outputId='G_O2')
+                    )
+                ),
+                column(3, align='center',
+                    div(style='outline:solid #663399',
+                        p(strong('24 hr G CO2:'),style='font-size:75%'),
+                        htmlOutput(outputId='G_CO2')
                     )
                 )
             )
@@ -162,22 +166,25 @@ server = function(input, output) {
     #Add numeric outputs
     output$GPP = renderText({
         modres = getModRes()
-        gppout = paste("<p style='color:#663399'><strong>", round(modres$GPP, 4),
-            '</strong></p>')
+        gppout = paste("<p style='color:#663399'>", round(modres$GPP, 3), '</p>')
         return(HTML(gppout))
     })
     output$ER = renderText({
         modres = getModRes()
-        erout = paste("<p style='color:#663399'><strong>", round(modres$ER, 4),
-            '</strong></p>')
+        erout = paste("<p style='color:#663399'>", round(modres$ER, 3), '</p>')
         return(HTML(erout))
     })
-    output$G = renderText({
+    output$G_O2 = renderText({
         modres = getModRes()
-        print(modres$G)
-        gout = paste("<p style='color:#663399'><strong>", round(modres$G, 4),
-            '</strong></p>')
-        return(HTML(gout))
+        gO2out = paste("<p style='color:#663399'>",
+            round(modres$G_O2_24hr, 3), '</p>')
+        return(HTML(gO2out))
+    })
+    output$G_CO2 = renderText({
+        modres = getModRes()
+        gCO2out = paste("<p style='color:#663399'>",
+            round(modres$G_CO2_24hr, 3), '</p>')
+        return(HTML(gCO2out))
     })
 }
 
