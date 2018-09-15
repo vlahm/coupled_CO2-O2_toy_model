@@ -74,36 +74,18 @@ ui = fluidPage(
                 )
             ),
             fluidRow(
-                column(12, align='center',
-                    p(strong('24 hour averages:'),
-                        style='font-size:75%; color:#663399')
+                column(4, align='right',
+                    p(strong('Extend to 4 days:'), style='font-size:75%')
+                ),
+                column(1, align='left',
+                    checkboxInput('extend4days', label=NULL)
                 )
-            ),
-            fluidRow(
-                column(3, align='center',
-                    div(style='outline:solid #663399',
-                        p(strong('GPP'), style='font-size:75%'),
-                        htmlOutput(outputId='GPP')
-                    )
-                ),
-                column(3, align='center',
-                    div(style='outline:solid #663399',
-                        p(strong('ER'), style='font-size:75%'),
-                        htmlOutput(outputId='ER')
-                    )
-                ),
-                column(3, align='center',
-                    div(style='outline:solid #663399',
-                        p(strong('G O2'),style='font-size:75%'),
-                        htmlOutput(outputId='G_O2')
-                    )
-                ),
-                column(3, align='center',
-                    div(style='outline:solid #663399',
-                        p(strong('G CO2'),style='font-size:75%'),
-                        htmlOutput(outputId='G_CO2')
-                    )
-                )
+                # column(7,
+                #     radioButtons('chooseCreek', label=NULL,
+                #         choiceNames=list(p('Fish Trap Creek', style='font-size:75%'),
+                #             p('FLBS spring', style='font-size:75%')),
+                #         choiceValues=list('fishTrapCreek', 'FLBS'))
+                # )
             )
         ),
         mainPanel(
@@ -113,7 +95,43 @@ ui = fluidPage(
             plotOutput(outputId='timeSeriesPlot_O2_CO2',
                 height='200px', width='auto'),
             plotOutput(outputId='timeSeriesPlot_pH_DIC',
-                height='250px', width='auto')
+                height='250px', width='auto'),
+            # fluidRow(
+            #     column(12, align='center',
+            #         p(strong('24 hour averages (mol/m2/day):'),
+            #             style='font-size:75%; color:#663399')
+            #     )
+            # ),
+            fluidRow(
+                column(2, align='left', offset=1,
+                    p(strong('24 hour averages (mol/m2/day):'),
+                        style='font-size:75%; color:#663399')
+                ),
+                column(2, align='center',
+                    div(style='outline:solid #663399',
+                        p(strong('GPP'), style='font-size:75%'),
+                        htmlOutput(outputId='GPP')
+                    )
+                ),
+                column(2, align='center',
+                    div(style='outline:solid #663399',
+                        p(strong('ER'), style='font-size:75%'),
+                        htmlOutput(outputId='ER')
+                    )
+                ),
+                column(2, align='center',
+                    div(style='outline:solid #663399',
+                        p(strong('G O2'),style='font-size:75%'),
+                        htmlOutput(outputId='G_O2')
+                    )
+                ),
+                column(2, align='center',
+                    div(style='outline:solid #663399',
+                        p(strong('G CO2'),style='font-size:75%'),
+                        htmlOutput(outputId='G_CO2')
+                    )
+                )
+            )
         )
     )
 )
@@ -126,8 +144,6 @@ server = function(input, output) {
     x.lt = as.POSIXlt(FishtrapCr$dateTime)
     temperature = FishtrapCr$Temp_C
     PAR = FishtrapCr$PAR_uE
-    localHour = x.lt$hour + x.lt$min/60 + x.lt$sec/3600
-    DOY = x.lt$yday
     lat = 48.93861111
     long = -122.47861111
     tz = -8
@@ -135,6 +151,18 @@ server = function(input, output) {
     salinity = 0
 
     getModRes = reactive({
+
+        #extend time and temperature time series if box is checked,
+        #then determine local hour and DOY
+        extnd = input$extend4days
+        if(extnd){
+            x.lt = as.POSIXlt(seq(x.lt[1], by='10 min', length.out=96 * 6))
+            # localHour = seq(localHour[1], by=1/6, length.out=96 * 6)
+            temperature = c(temperature, rep(10, 96 * 6 - length(temperature)))
+            PAR = c(PAR, rep(mean(PAR, na.rm=TRUE), 96 * 6 - length(PAR)))
+        }
+        localHour = x.lt$hour + x.lt$min/60 + x.lt$sec/3600
+        DOY = x.lt$yday
 
         # Static variable inputs (single value) from user interface
         depth = input$depth
