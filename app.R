@@ -65,7 +65,7 @@ ui = fluidPage(
                         style='font-size:75%'),
                     numericInput(inputId='pCO2_init', label=NULL,
                         min=0, max=10000, value=2000),
-                    p(strong('Init pCO2 air'), '(uatm)', style='font-size:75%'),
+                    p(strong('pCO2 air'), '(uatm)', style='font-size:75%'),
                     numericInput(inputId='pCO2_air', label=NULL,
                         min=0, max=10000, value=410),
                     p(strong('Init [O2]'), '(umol/L)', style='font-size:75%'),
@@ -74,18 +74,17 @@ ui = fluidPage(
                 )
             ),
             fluidRow(
-                column(4, align='right',
-                    p(strong('Extend to 4 days:'), style='font-size:75%')
-                ),
-                column(1, align='left',
+                column(6, align='center',
+                    p(strong('Extend to 4 days'), style='font-size:75%'),
                     checkboxInput('extend4days', label=NULL)
+                ),
+                column(6, align='left',
+                    p(strong('Select dataset'), style='font-size:75%'),
+                    radioButtons('chooseCreek', label=NULL,
+                        choiceNames=list(p('Fish Trap Creek', style='font-size:75%'),
+                            p('FLBS Stream', style='font-size:75%')),
+                        choiceValues=list('fishTrapCreek', 'FLBS'))
                 )
-                # column(7,
-                #     radioButtons('chooseCreek', label=NULL,
-                #         choiceNames=list(p('Fish Trap Creek', style='font-size:75%'),
-                #             p('FLBS spring', style='font-size:75%')),
-                #         choiceValues=list('fishTrapCreek', 'FLBS'))
-                # )
             )
         ),
         mainPanel(
@@ -139,18 +138,27 @@ ui = fluidPage(
 # Define server logic required to time seroes plot of model output ----
 server = function(input, output) {
 
-    # Background physical data from Fishtrap Cr.
-    # Not editable by users
-    x.lt = as.POSIXlt(FishtrapCr$dateTime)
-    temperature = FishtrapCr$Temp_C
-    PAR = FishtrapCr$PAR_uE
-    lat = 48.93861111
-    long = -122.47861111
-    tz = -8
-    masl = 1
-    salinity = 0
-
     getModRes = reactive({
+
+        # set background data for selected dataset
+        if(input$chooseCreek == 'fishTrapCreek'){
+            x.lt = as.POSIXlt(FishtrapCr$dateTime)
+            temperature = FishtrapCr$Temp_C
+            PAR = FishtrapCr$PAR_uE
+            lat = 48.93861111
+            long = -122.47861111
+            tz = -8
+        } else {
+            x.lt = as.POSIXlt(RoysCr$dateTime)
+            temperature = RoysCr$Temp_C
+            PAR = RoysCr$lux
+            lat = 47.887404
+            long = -114.117811
+            tz = -6
+        }
+
+        masl = 1
+        salinity = 0
 
         #extend time and temperature time series if box is checked,
         #then determine local hour and DOY
